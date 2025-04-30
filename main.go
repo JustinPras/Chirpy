@@ -5,38 +5,15 @@ import (
 	"log"
 )
 
-// type Server struct {
-// 	Addr string
-// 	Handler Handler
-// 	DisableGeneralOptionsHandler bool
-// 	TLSConfig *tls.Config
-// 	ReadTimeout time.Duration
-// 	ReadHeaderTimeout time.Duration
-// 	WriteTimeout time.Duration
-// 	IdleTimeout time.Duration
-// 	MaxHeaderBytes int
-// 	TLSNextProto map[string]func(*Server, *tls.Conn, Handler)
-// 	ConnState func(net.Conn, ConnState)
-// 	ErrorLog *log.Logger
-// 	BaseContext func(net.Listener) context.Context
-// 	ConnContext func(ctx context.Context, c net.Conn) context.Context
-// 	HTTP2 *HTTP2Config
-// 	Protocols *Protocols
-// }
-
 func main() {
-	serveMux := http.NewServeMux()
-	server := http.Server{
-		Addr: ":8080",
-		Handler: serveMux,
+	const port = "8080"
+
+	mux := http.NewServeMux()
+	server := &http.Server{
+		Addr: ":" + port,
+		Handler: mux,
 	}
 
-	err := server.ListenAndServe()
-	if err != nil {
-		log.Fatal("RIP")
-	}
-	// var err error = nil
-	// for err == nil {
-		
-	// }
+	log.Printf("Serving on port: %s\n", port)
+	log.Fatal(server.ListenAndServe())
 }
