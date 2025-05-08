@@ -3,7 +3,13 @@ package main
 import "net/http"
 
 func (cfg *apiConfig) handlerReset(w http.ResponseWriter, r *http.Request) {
-	cfg.fileserverHits.Store(0)
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("File server hits has been reset to: 0"))
+	if cfg.platform != "dev" {
+		respondWithError(w, http.StatusForbidden, "403 Forbidden", nil)
+		return
+	}
+	
+	err := cfg.db.DeleteUsers(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't delete users", err)
+	}
 }

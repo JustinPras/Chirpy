@@ -13,8 +13,9 @@ import (
 )
 
 type apiConfig struct {
-	fileserverHits atomic.Int32
-	db *database.Queries
+	fileserverHits 	atomic.Int32
+	db 				*database.Queries
+	platform 		string
 }
 
 func main() {
@@ -24,6 +25,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	platform := os.Getenv("PLATFORM")
+
 	dbURL := os.Getenv("DB_URL")
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -32,6 +35,7 @@ func main() {
 	dbQueries := database.New(db)
 
 	apiCfg := apiConfig {
+		platform: platform,
 		db: dbQueries,
 	}
 
@@ -41,6 +45,7 @@ func main() {
 	mux.HandleFunc("GET /admin/metrics", apiCfg.handlerMetrics)
 	mux.HandleFunc("POST /admin/reset", apiCfg.handlerReset)
 	mux.HandleFunc("POST /api/validate_chirp", apiCfg.handlerChirpsValidate)
+	mux.HandleFunc("POST /api/users", apiCfg.handlerUsersCreate)
 
 	server := &http.Server{
 		Addr: ":" + port,
@@ -50,4 +55,3 @@ func main() {
 	log.Printf("Serving files from %s on port: %s\n", filepathRoot, port)
 	log.Fatal(server.ListenAndServe())
 }
-
