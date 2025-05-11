@@ -29,5 +29,9 @@ Content-Type: application/json
 
 {
   "body": "Hello, world!",
-  "user_id": "9c789544-b604-4640-bb11-a1489eb2a7a5"
+  "user_id": "ce68b6d0-1433-46cd-84d1-16a7db76b4cb"
 }
+
+###
+
+GET http://localhost:8080/api/chirps
