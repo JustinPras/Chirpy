@@ -21,3 +21,13 @@ Content-Type: application/json
 {
     "email": "user@example.com"
 }
+
+###
+
+POST http://localhost:8080/api/chirps
+Content-Type: application/json
+
+{
+  "body": "Hello, world!",
+  "user_id": "9c789544-b604-4640-bb11-a1489eb2a7a5"
+}
