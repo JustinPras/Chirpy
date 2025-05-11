@@ -6,11 +6,10 @@ import (
 	"time"
 
 	"github.com/JustinPras/Chirpy/internal/auth"
-	"github.com/JustinPras/Chirpy/internal/database"
 	"github.com/google/uuid"
 )
 
-func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Password 	string 	`json:"password`
 		Email 		string 	`json:"email"`
@@ -24,20 +23,15 @@ func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	hashedPwd, err := auth.HashPassword(params.Password)
+	user, err := cfg.db.GetUserByEmail(r.Context(), params.Email)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't hash password", err)
+		respondWithError(w, http.StatusUnauthorized, "Incorrect email", err)
 		return
 	}
 
-	userParams := database.CreateUserParams{
-		Email:			params.Email,
-		HashedPassword:	hashedPwd,
-	}
-
-	user, err := cfg.db.CreateUser(r.Context(), userParams)
+	err = auth.CheckPasswordHash(user.HashedPassword, params.Password)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't create new user", err)
+		respondWithError(w, http.StatusUnauthorized, "Incorrect password", err)
 		return
 	}
 
@@ -48,11 +42,11 @@ func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request)
 		Email 		string 		`json:"email"`
 	}
 
-	
-	respondWithJSON(w, http.StatusCreated, returnVals{
-		Id:	user.ID,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		Email: user.Email,
+
+	respondWithJSON(w, http.StatusOK, returnVals{
+		Id:			user.ID,
+		CreatedAt: 	user.CreatedAt,
+		UpdatedAt: 	user.UpdatedAt,
+		Email: 		user.Email,
 	})
 }
