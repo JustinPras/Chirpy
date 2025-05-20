@@ -3,6 +3,7 @@ package auth
 import (
 	"testing"
 	"time"
+	"net/http"
 
 	"github.com/google/uuid"
 )
@@ -51,5 +52,24 @@ func TestValidateJWT(t *testing.T) {
 
 	if userID != userIDActual {
 		t.Errorf("Expecting: %v\nActual: %v", userID, userIDActual)
+	}
+}
+
+func TestGetBearerToken(t *testing.T) {
+	req, err := http.NewRequest("GET", "http://localhost:8080/app/", nil)
+	if err != nil {
+		t.Errorf("Error creating HTTP request: %v", err)
+	}
+
+	value := "TOKEN_STRING"
+	req.Header.Set("Authorization", value)
+
+	tokenString, err := GetBearerToken(req.Header)
+	if err != nil {
+		t.Errorf("Error getting bearer token: %v", err)
+	}
+	
+	if tokenString != value {
+		t.Errorf("Expecting: %v\nActual: %v", value, tokenString)
 	}
 }

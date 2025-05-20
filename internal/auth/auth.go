@@ -3,6 +3,8 @@ package auth
 import (
 	"fmt"
 	"time"
+	"net/http"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -77,4 +79,16 @@ func ValidateJWT(tokenString, tokenSecret string) (uuid.UUID, error) {
 	}
 
 	return userID, nil
+}
+
+func GetBearerToken(headers http.Header) (string, error) {
+	authHeader := headers.Get("Authorization")
+	if authHeader == "" {
+		return "", fmt.Errorf("Authorization header does not exist")
+	}
+
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	
+	return tokenString, nil
 }
