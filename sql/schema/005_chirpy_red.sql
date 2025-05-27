@@ -5,4 +5,4 @@ DEFAULT FALSE;
 
 -- +goose Down
 ALTER TABLE users
-DROP is_chirpy_red;
+DROP COLUMN is_chirpy_red;
