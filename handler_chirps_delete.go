@@ -9,10 +9,6 @@ import (
 
 func (cfg *apiConfig) handlerChirpsDelete(w http.ResponseWriter, r *http.Request) {
 
-	type response struct {
-		response	string
-	}
-
 	chirpIDString := r.PathValue("chirpID")
 	chirpID, err := uuid.Parse(chirpIDString)
 	if err != nil {
@@ -45,11 +41,9 @@ func (cfg *apiConfig) handlerChirpsDelete(w http.ResponseWriter, r *http.Request
 
 	err = cfg.db.DeleteChirp(r.Context(), chirpID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Could not delete chirp", err)
+		respondWithError(w, http.StatusInternalServerError, "Couldn't delete chirp", err)
 		return
 	}
 
-	respondWithJSON(w, http.StatusNoContent, response{
-		response: "Chirp deleted",
-	})
+	w.WriteHeader(http.StatusNoContent)
 }
