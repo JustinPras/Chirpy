@@ -17,6 +17,7 @@ type apiConfig struct {
 	db 				*database.Queries
 	platform 		string
 	jwtSecret		string
+	polkaAPIKey		string
 }
 
 func main() {
@@ -29,6 +30,7 @@ func main() {
 	platform := os.Getenv("PLATFORM")
 	dbURL := os.Getenv("DB_URL")
 	jwtSecret := os.Getenv("JWT_SECRET")
+	polkaAPIKey := os.Getenv("POLKA_KEY")
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -37,9 +39,10 @@ func main() {
 	dbQueries := database.New(db)
 
 	apiCfg := apiConfig {
-		platform: 	platform,
-		db: 		dbQueries,
-		jwtSecret:	jwtSecret,
+		platform: 		platform,
+		db: 			dbQueries,
+		jwtSecret:		jwtSecret,
+		polkaAPIKey:	polkaAPIKey,
 	}
 
 	fileServerHandler := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))

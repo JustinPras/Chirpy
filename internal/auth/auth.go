@@ -117,3 +117,15 @@ func MakeRefreshToken(db *database.Queries, userID uuid.UUID, expiresIn time.Tim
 
 	return refreshToken.Token, nil
 }
+
+func GetAPIKey(headers http.Header) (string, error) {
+	authHeader := headers.Get("Authorization")
+	if authHeader == "" {
+		return "", fmt.Errorf("Authorization header does not exist")
+	}
+
+	apiKey := strings.TrimPrefix(authHeader, "ApiKey ")
+
+	
+	return apiKey, nil
+}
