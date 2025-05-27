@@ -29,7 +29,7 @@ func (cfg *apiConfig) handlerWebhook(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(cfg.polkaAPIKey)
 
 	if apiKey != cfg.polkaAPIKey {
-		respondWithError(w, http.StatusUnauthorized, "You are not authorised to do that", err)
+		respondWithError(w, http.StatusUnauthorized, "API key is invalid", err)
 		return
 	}
 
