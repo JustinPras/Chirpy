@@ -13,5 +13,17 @@ RETURNING *;
 SELECT * FROM users
 WHERE email = $1;
 
+-- name: GetUserByID :one
+SELECT * FROM users
+WHERE id = $1;
+
+-- name: UpdateUserPaswordAndEmail :one
+UPDATE users
+SET hashed_password = $1,
+    email = $2,
+    updated_at = NOW()
+WHERE id = $3
+RETURNING *;
+
 -- name: DeleteUsers :exec
 DELETE FROM users;
