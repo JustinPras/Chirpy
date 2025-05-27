@@ -31,12 +31,6 @@ func (cfg *apiConfig) handlerUsersUpdate(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// user, err := cfg.db.GetUserByID(r.Context(), userID)
-	// if err != nil {
-	// 	respondWithError(w, http.StatusInternalServerError, "Couldn't find user", err)
-	// 	return
-	// }
-
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
 	err = decoder.Decode(&params)
@@ -51,13 +45,13 @@ func (cfg *apiConfig) handlerUsersUpdate(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	newUserParams := database.UpdateUserPaswordAndEmailParams{
+	newUserParams := database.UpdateUserParams{
+		ID:				userID,
 		Email:			params.Email,
 		HashedPassword:	hashedPwd,
-		ID:				userID,
 	}
 
-	user, err := cfg.db.UpdateUserPaswordAndEmail(r.Context(), newUserParams)
+	user, err := cfg.db.UpdateUser(r.Context(), newUserParams)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't update user", err)
 		return

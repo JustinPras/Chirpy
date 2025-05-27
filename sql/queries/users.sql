@@ -17,12 +17,12 @@ WHERE email = $1;
 SELECT * FROM users
 WHERE id = $1;
 
--- name: UpdateUserPaswordAndEmail :one
+-- name: UpdateUser :one
 UPDATE users
-SET hashed_password = $1,
-    email = $2,
+SET email = $2,
+    hashed_password = $3,
     updated_at = NOW()
-WHERE id = $3
+WHERE id = $1
 RETURNING *;
 
 -- name: DeleteUsers :exec
