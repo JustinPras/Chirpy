@@ -25,12 +25,22 @@ func main() {
 	const filepathRoot = "."
 	const port = "8080"
 
-	mux := http.NewServeMux()
-
-	platform := os.Getenv("PLATFORM")
 	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		log.Fatal("DB_URL must be set")
+	}
+	platform := os.Getenv("PLATFORM")
+	if platform == "" {
+		log.Fatal("PLATFORM environment variable is not set")
+	}
 	jwtSecret := os.Getenv("JWT_SECRET")
-	polkaAPIKey := os.Getenv("POLKA_KEY")
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET environment variable is not set")
+	}
+	polkaKey := os.Getenv("POLKA_KEY")
+	if polkaKey == "" {
+		log.Fatal("POLKA_KEY environment variable is not set")
+	}
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -39,12 +49,14 @@ func main() {
 	dbQueries := database.New(db)
 
 	apiCfg := apiConfig {
+		fileserverHits: atomic.Int32{},
 		platform: 		platform,
 		db: 			dbQueries,
 		jwtSecret:		jwtSecret,
 		polkaAPIKey:	polkaAPIKey,
 	}
 
+	mux := http.NewServeMux()
 	fileServerHandler := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
 	mux.Handle("/app/", apiCfg.middlewareMetricsInc(fileServerHandler))
 
