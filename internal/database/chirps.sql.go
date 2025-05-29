@@ -104,6 +104,41 @@ func (q *Queries) GetChirpsForUserOrderByCreatedAtAsc(ctx context.Context, userI
 	return items, nil
 }
 
+const getChirpsForUserOrderByCreatedAtDesc = `-- name: GetChirpsForUserOrderByCreatedAtDesc :many
+SELECT id, created_at, updated_at, body, user_id FROM chirps
+WHERE user_id = $1
+ORDER BY created_at DESC
+`
+
+func (q *Queries) GetChirpsForUserOrderByCreatedAtDesc(ctx context.Context, userID uuid.UUID) ([]Chirp, error) {
+	rows, err := q.db.QueryContext(ctx, getChirpsForUserOrderByCreatedAtDesc, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Chirp
+	for rows.Next() {
+		var i Chirp
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Body,
+			&i.UserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getChirpsOrderByCreatedAtAsc = `-- name: GetChirpsOrderByCreatedAtAsc :many
 SELECT id, created_at, updated_at, body, user_id FROM chirps
 ORDER BY created_at ASC
@@ -111,6 +146,40 @@ ORDER BY created_at ASC
 
 func (q *Queries) GetChirpsOrderByCreatedAtAsc(ctx context.Context) ([]Chirp, error) {
 	rows, err := q.db.QueryContext(ctx, getChirpsOrderByCreatedAtAsc)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Chirp
+	for rows.Next() {
+		var i Chirp
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Body,
+			&i.UserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChirpsOrderByCreatedAtDesc = `-- name: GetChirpsOrderByCreatedAtDesc :many
+SELECT id, created_at, updated_at, body, user_id FROM chirps
+ORDER BY created_at DESC
+`
+
+func (q *Queries) GetChirpsOrderByCreatedAtDesc(ctx context.Context) ([]Chirp, error) {
+	rows, err := q.db.QueryContext(ctx, getChirpsOrderByCreatedAtDesc)
 	if err != nil {
 		return nil, err
 	}

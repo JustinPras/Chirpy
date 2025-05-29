@@ -9,30 +9,48 @@ import (
 
 func (cfg *apiConfig) handlerChirpsRetrieve(w http.ResponseWriter, r *http.Request) {
 	
+	var dbChirps []database.Chirp
 	var err error
+	authorID := uuid.Nil
 
 	authorIDString := r.URL.Query().Get("author_id")
-	authorID, err := uuid.Parse(authorIDString)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Author ID", err)
-		return
-	}
-
-	var dbChirps []database.Chirp
-	
-
-	if authorID != uuid.Nil {
-		dbChirps, err = cfg.db.GetChirpsForUserOrderByCreatedAtAsc(r.Context(), authorID)
+	if authorIDString != "" {
+		authorID, err = uuid.Parse(authorIDString)
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve Chirps", err)
+			respondWithError(w, http.StatusBadRequest, "Invalid Author ID", err)
 			return
 		}
+	}
+	
 
+	sort := r.URL.Query().Get("sort")
+	if sort == "desc" {
+		if authorID != uuid.Nil {
+			dbChirps, err = cfg.db.GetChirpsForUserOrderByCreatedAtDesc(r.Context(), authorID)
+			if err != nil {
+				respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve Chirps", err)
+				return
+			}
+		} else {
+			dbChirps, err = cfg.db.GetChirpsOrderByCreatedAtDesc(r.Context())
+			if err != nil {
+				respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve Chirps", err)
+				return
+			}
+		}
 	} else {
-		dbChirps, err = cfg.db.GetChirpsOrderByCreatedAtAsc(r.Context())
-		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve Chirps", err)
-			return
+		if authorID != uuid.Nil {
+			dbChirps, err = cfg.db.GetChirpsForUserOrderByCreatedAtAsc(r.Context(), authorID)
+			if err != nil {
+				respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve Chirps", err)
+				return
+			}
+		} else {
+			dbChirps, err = cfg.db.GetChirpsOrderByCreatedAtAsc(r.Context())
+			if err != nil {
+				respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve Chirps", err)
+				return
+			}
 		}
 	}
 
